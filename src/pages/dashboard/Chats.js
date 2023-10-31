@@ -14,7 +14,6 @@ import {
 import { ArchiveBox, CircleDashed, MagnifyingGlass } from "phosphor-react";
 import React from "react";
 import { useTheme } from "@emotion/react";
-import { SimpleBarStyle } from "../../components/Scrollbar";
 import { ChatList } from "../../data/index";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -170,9 +169,29 @@ const Chats = () => {
         <Stack
           spacing={2}
           direction="column"
-          sx={{ flexGrow: 1, overflow: "scroll", height: "100%" }}
+          sx={{
+            scrollbarWidth: "thin",
+            "&::-webkit-scrollbar": {
+              width: "0.1em",
+            },
+            "&::-webkit-scrollbar-track": {
+              background:  theme.palette.mode === "light"
+              ? "#f1f1f1"
+              : "#555",
+            },  
+            "&::-webkit-scrollbar-thumb": {
+              background:  theme.palette.mode === "light"
+              ? "#555"
+              : "#f1f1f1",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "#888",
+            },
+            flexGrow: 1,
+            overflow: "auto",
+            height: "100%",
+          }}
         >
-          <SimpleBarStyle timeout={500} clickOnTrack={false}>
             <Stack spacing={2.4}>
               <Typography variant="subtitle2" sx={{ color: "#676767" }}>
                 Pinned
@@ -180,7 +199,7 @@ const Chats = () => {
               {ChatList.filter((ele) => ele.pinned).map((ele) => {
                 return (
                   <>
-                    <ChatElement {...ele} />
+                    <ChatElement key={ele.id} {...ele} />
                   </>
                 );
               })}
@@ -191,13 +210,12 @@ const Chats = () => {
                 {ChatList.filter((ele) => !ele.pinned).map((ele) => {
                   return (
                     <>
-                      <ChatElement {...ele} />
+                      <ChatElement key={ele.id} {...ele} />
                     </>
                   );
                 })}
               </Stack>
             </Stack>
-          </SimpleBarStyle>
         </Stack>
       </Stack>
     </Box>
