@@ -34,7 +34,7 @@ const Conversation = () => {
           },
         }}
       >
-        <Message />
+        <Message menu={true} />
       </Box>
 
       {/* chat footer */}
