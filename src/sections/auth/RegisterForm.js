@@ -8,18 +8,16 @@ import {
   Button,
   IconButton,
   InputAdornment,
-  Link,
   Stack,
 } from "@mui/material";
-import {Link as RouterLink} from "react-router-dom";
 import { RHFTextField } from "../../components/hook-form";
 import { Eye, EyeSlash } from "phosphor-react";
 
-// yup is used to  validate the schema of the form.
-
-const LoginForm = () => {
+const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const LoginSchema = Yup.object().shape({
+  const RegisterSchema = Yup.object().shape({
+    firstName: Yup.string().required("First Name is required"),
+    lastName: Yup.string().required("Last Name is required"),
     email: Yup.string()
       .required("Email is required")
       .email("Email must be  a valid email address"),
@@ -27,12 +25,14 @@ const LoginForm = () => {
   });
 
   const defaultValues = {
+    firstName: "",
+    lastName: "",
     email: "demo@gmail.com",
     password: "demo123@DEMO",
   };
 
   const methods = useForm({
-    resolver: yupResolver(LoginSchema),
+    resolver: yupResolver(RegisterSchema),
     defaultValues,
   });
 
@@ -55,13 +55,16 @@ const LoginForm = () => {
       });
     }
   };
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
         {!!errors.afterSubmit && (
           <Alert severity="error">{errors.afterSubmit.message}</Alert>
         )}
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <RHFTextField name="firstName" label="First Name" />
+          <RHFTextField name="lastName" label="Last Name" />
+        </Stack>
         <RHFTextField name="email" label="Email Address" />
         <RHFTextField
           name="password"
@@ -81,33 +84,28 @@ const LoginForm = () => {
             ),
           }}
         />
-      </Stack>
-      <Stack alignItems={"flex-end"} sx={{ my: 2 }}>
-        <Link component={RouterLink} to="/auth/reset-password" variant="body2" color="inherit" underline="always">
-          Forgot Password?
-        </Link>
-      </Stack>
-      <Button
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        sx={{
-          bgcolor: "text.primary",
-          color: (theme) =>
-            theme.palette.mode === "light" ? "common.white" : "grey.800",
-          "&:hover": {
+        <Button
+          fullWidth
+          color="inherit"
+          size="large"
+          type="submit"
+          variant="contained"
+          sx={{
             bgcolor: "text.primary",
             color: (theme) =>
               theme.palette.mode === "light" ? "common.white" : "grey.800",
-          },
-        }}
-      >
-        Login
-      </Button>
+            "&:hover": {
+              bgcolor: "text.primary",
+              color: (theme) =>
+                theme.palette.mode === "light" ? "common.white" : "grey.800",
+            },
+          }}
+        >
+          Create an account
+        </Button>
+      </Stack>
     </FormProvider>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
