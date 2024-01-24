@@ -11,7 +11,6 @@ import StarredMessages from "../../components/StarredMessaged";
 const GeneralApp = () => {
   const theme = useTheme();
   const { sideBar } = useSelector((store) => store?.app);
-  console.log(sideBar);
   return (
     <>
       <Stack direction="row" sx={{ width: "100%" }}>
