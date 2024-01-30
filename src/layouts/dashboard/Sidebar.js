@@ -17,16 +17,49 @@ import { useState } from "react";
 import useSettings from "../../hooks/useSettings";
 import AntSwitch from "../../components/AntSwitch";
 import { Profile_Menu } from "../../data";
+import { useNavigate } from "react-router-dom";
+
+const getMenuPath = (index) => {
+  switch (index) {
+    case 0:
+      return "/profile";
+    case 1:
+      return "/settings";
+      case 2:
+        // logic >> set "isAuthenticated" to "false"
+        return "/auth/login";
+    default:
+      break;
+  }
+};
+
+const getPath =(index)=>{
+  switch (index) {
+    case 0:
+      return "/app";
+    case 1:
+      return "/group";
+    case 2:
+      return "/call";
+    case 3:
+      return "/settings";
+    default:
+      break;
+  }
+}
 
 const Sidebar = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const { onToggleMode } = useSettings();
   const [selected, setSelected] = useState(0);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -80,7 +113,10 @@ const Sidebar = () => {
                 </Box>
               ) : (
                 <IconButton
-                  onClick={() => setSelected(ele.index)}
+                  onClick={() =>{ 
+                    setSelected(ele.index);
+                  navigate(getPath(ele.index))
+                  }}
                   sx={{
                     width: "max-content",
                     color:
@@ -111,7 +147,11 @@ const Sidebar = () => {
               </Box>
             ) : (
               <IconButton
-                onClick={() => setSelected(3)}
+                onClick={() =>{ 
+                  setSelected(3);
+                  navigate(getPath(3))
+                
+                }}
                 sx={{
                   width: "max-content",
                   color:
@@ -130,12 +170,13 @@ const Sidebar = () => {
         <Stack spacing={3} alignItems={"center"}>
           <AntSwitch onChange={() => onToggleMode()} defaultChecked />
           <Avatar
-           src={faker.image.avatar()}
-           id="basic-button"
-           aria-controls={open ? "basic-menu" : undefined}
-           aria-haspopup="true"
-           aria-expanded={open ? "true" : undefined}
-           onClick={handleClick} />
+            src={faker.image.avatar()}
+            id="basic-button"
+            aria-controls={open ? "basic-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+          />
           <Menu
             id="basic-menu"
             anchorEl={anchorEl}
@@ -145,19 +186,28 @@ const Sidebar = () => {
               "aria-labelledby": "basic-button",
             }}
             anchorOrigin={{
-              vertical:"bottom",
-              horizontal:"right"
+              vertical: "bottom",
+              horizontal: "right",
             }}
             transformOrigin={{
-                vertical:"bottom",
-                horizontal:"left"
-              }}
+              vertical: "bottom",
+              horizontal: "left",
+            }}
           >
             <Stack spacing={1} px={1}>
-              {Profile_Menu.map((el) => (
-                <MenuItem onClick={handleClose}>
-                  <Stack sx={{width:100}} direction="row"
-                  alignItems={"center"} justifyContent={"space-between"}>
+              {Profile_Menu.map((el,idx) => (
+                <MenuItem onClick={()=>{
+                handleClick();
+                }}>
+                  <Stack
+                  onClick={()=>{
+                    navigate(getMenuPath(idx));
+                    }}
+                    sx={{ width: 100 }}
+                    direction="row"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                  >
                     <span>{el?.title}</span>
                     {el?.icon}
                   </Stack>
