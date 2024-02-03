@@ -14,10 +14,13 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import { RHFTextField } from "../../components/hook-form";
 import { Eye, EyeSlash } from "phosphor-react";
+import { LoginUser } from "../../redux/slices/auth";
+import { useDispatch } from "react-redux";
 
 // yup is used to  validate the schema of the form.
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const LoginSchema = Yup.object().shape({
     email: Yup.string()
@@ -46,6 +49,7 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     try {
       // submit data to backend
+      dispatch(LoginUser(data));
     } catch (error) {
       console.log(error);
       reset();
