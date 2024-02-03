@@ -18,6 +18,8 @@ import useSettings from "../../hooks/useSettings";
 import AntSwitch from "../../components/AntSwitch";
 import { Profile_Menu } from "../../data";
 import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../../redux/slices/auth";
+import { useDispatch } from "react-redux";
 
 const getMenuPath = (index) => {
   switch (index) {
@@ -25,15 +27,15 @@ const getMenuPath = (index) => {
       return "/profile";
     case 1:
       return "/settings";
-      case 2:
-        // logic >> set "isAuthenticated" to "false"
-        return "/auth/login";
+    case 2:
+      // logic >> set "isAuthenticated" to "false"
+      return "/auth/login";
     default:
       break;
   }
 };
 
-const getPath =(index)=>{
+const getPath = (index) => {
   switch (index) {
     case 0:
       return "/app";
@@ -46,9 +48,10 @@ const getPath =(index)=>{
     default:
       break;
   }
-}
+};
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
   const { onToggleMode } = useSettings();
@@ -113,9 +116,9 @@ const Sidebar = () => {
                 </Box>
               ) : (
                 <IconButton
-                  onClick={() =>{ 
+                  onClick={() => {
                     setSelected(ele.index);
-                  navigate(getPath(ele.index))
+                    navigate(getPath(ele.index));
                   }}
                   sx={{
                     width: "max-content",
@@ -147,10 +150,9 @@ const Sidebar = () => {
               </Box>
             ) : (
               <IconButton
-                onClick={() =>{ 
+                onClick={() => {
                   setSelected(3);
-                  navigate(getPath(3))
-                
+                  navigate(getPath(3));
                 }}
                 sx={{
                   width: "max-content",
@@ -195,13 +197,19 @@ const Sidebar = () => {
             }}
           >
             <Stack spacing={1} px={1}>
-              {Profile_Menu.map((el,idx) => (
-                <MenuItem onClick={()=>{
-                handleClick();
-                }}>
+              {Profile_Menu.map((el, idx) => (
+                <MenuItem
+                  onClick={() => {
+                    handleClick();
+                  }}
+                >
                   <Stack
-                  onClick={()=>{
-                    navigate(getMenuPath(idx));
+                    onClick={() => {
+                      if (idx === 2) {
+                        dispatch(logoutUser());
+                      } else {
+                        navigate(getMenuPath(idx));
+                      }
                     }}
                     sx={{ width: 100 }}
                     direction="row"

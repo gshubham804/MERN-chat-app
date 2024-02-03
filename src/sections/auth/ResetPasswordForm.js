@@ -5,10 +5,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { Alert, Button, Stack } from "@mui/material";
 import { RHFTextField } from "../../components/hook-form";
+import { resetPassword } from "../../redux/slices/auth";
+import { useDispatch } from "react-redux";
 
 // yup is used to  validate the schema of the form.
 
 const ResetPasswordForm = () => {
+  const dispatch = useDispatch();
   const ResetPasswordSchema = Yup.object().shape({
     email: Yup.string()
       .required("Email is required")
@@ -34,6 +37,7 @@ const ResetPasswordForm = () => {
   const onSubmit = async (data) => {
     try {
       // submit data to backend
+      dispatch(resetPassword(data))
     } catch (error) {
       console.log(error);
       reset();
