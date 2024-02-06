@@ -12,7 +12,7 @@ import {
   MagnifyingGlass,
   Users,
 } from "phosphor-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { ChatList } from "../../data/index";
 import {
@@ -22,17 +22,30 @@ import {
 } from "../../components/Search";
 import ChatElement from "../../components/ChatElement";
 import Friends from "../../sections/main/Friends";
+import { socket } from "../../socket";
+import { useSelector } from "react-redux";
+
+const user_id = window.localStorage.getItem("user_id");
 
 const Chats = () => {
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState(false);
+  const { conversations } = useSelector(
+    (state) => state.conversation.direct_chat
+  );
 
+  useEffect(() => {
+    socket.emit("get_direct_conversation", { user_id }, (data) => {
+      // data =>> list of conversation =>> coming from backend ==>> existing conversation
+    });
+  }, []);
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+
   return (
     <>
       <Box
@@ -104,7 +117,7 @@ const Chats = () => {
             }}
           >
             <Stack spacing={2.4}>
-              <Typography variant="subtitle2" sx={{ color: "#676767" }}>
+              {/* <Typography variant="subtitle2" sx={{ color: "#676767" }}>
                 Pinned
               </Typography>
               {ChatList.filter((ele) => ele.pinned).map((ele) => {
@@ -113,18 +126,20 @@ const Chats = () => {
                     <ChatElement key={ele.id} {...ele} />
                   </>
                 );
-              })}
+              })} */}
               <Stack spacing={2.4}>
                 <Typography variant="subtitle2" sx={{ color: "#676767" }}>
                   All Chats
                 </Typography>
-                {ChatList.filter((ele) => !ele.pinned).map((ele) => {
-                  return (
-                    <>
-                      <ChatElement key={ele.id} {...ele} />
-                    </>
-                  );
-                })}
+                {conversations
+                  .filter((ele) => !ele.pinned)
+                  .map((ele) => {
+                    return (
+                      <>
+                        <ChatElement key={ele.id} {...ele} />
+                      </>
+                    );
+                  })}
               </Stack>
             </Stack>
           </Stack>
