@@ -27,8 +27,10 @@ const slice = createSlice({
           user_id: user?._id,
           name: `${user?.firstName} ${user?.lastName}`,
           online: user?.status === "Online",
-          img: `https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${user?.avatar}`,
-          msg: el.messages.slice(-1)[0].text, 
+          img: faker.image.avatar(),
+          // img: `https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${user?.avatar}`,
+          msg: faker.music.songName(),
+          // msg: el.messages.slice(-1)[0].text,
           time: "9:36",
           unread: 0,
           pinned: false,
@@ -100,7 +102,7 @@ const slice = createSlice({
     },
     addDirectMessage(state, action) {
       state.direct_chat.current_messages.push(action.payload.message);
-    }
+    },
   },
 });
 
@@ -131,15 +133,14 @@ export const SetCurrentConversation = (current_conversation) => {
   };
 };
 
-
-export const FetchCurrentMessages = ({messages}) => {
-  return async(dispatch, getState) => {
-    dispatch(slice.actions.fetchCurrentMessages({messages}));
-  }
-}
+export const FetchCurrentMessages = ({ messages }) => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.fetchCurrentMessages({ messages }));
+  };
+};
 
 export const AddDirectMessage = (message) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.addDirectMessage({message}));
-  }
-}
+    dispatch(slice.actions.addDirectMessage({ message }));
+  };
+};
