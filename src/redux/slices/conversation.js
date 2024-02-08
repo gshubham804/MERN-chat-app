@@ -1,13 +1,13 @@
-import { faker } from "@faker-js/faker";
 import { createSlice } from "@reduxjs/toolkit";
+import { faker } from "@faker-js/faker";
+import { AWS_S3_REGION, S3_BUCKET_NAME } from "../../config";
 
-const { user_id } =""
-//  window.localStorage.getItem("user_id");
+const user_id = window.localStorage.getItem("user_id");
 
 const initialState = {
   direct_chat: {
     conversations: [],
-    current_conversations: null,
+    current_conversation: null,
     current_messages: [],
   },
   group_chat: {},
@@ -19,22 +19,23 @@ const slice = createSlice({
   reducers: {
     fetchDirectConversations(state, action) {
       const list = action.payload.conversations.map((el) => {
-        const this_user = el.participants.find(
+        const user = el.participants.find(
           (elm) => elm._id.toString() !== user_id
         );
         return {
           id: el._id,
-          user_id: this_user?._id,
-          name: `${this_user?.firstName} ${this_user?.lastName}`,
-          online: this_user?.status === "Online",
-          img: faker.image.avatar(),
-          msg: faker.music.songName(),
+          user_id: user?._id,
+          name: `${user?.firstName} ${user?.lastName}`,
+          online: user?.status === "Online",
+          img: `https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${user?.avatar}`,
+          msg: el.messages.slice(-1)[0].text, 
           time: "9:36",
           unread: 0,
           pinned: false,
-          about: this_user?.about,
+          about: user?.about,
         };
       });
+
       state.direct_chat.conversations = list;
     },
     updateDirectConversation(state, action) {
@@ -83,29 +84,62 @@ const slice = createSlice({
       });
     },
     setCurrentConversation(state, action) {
-      state.direct_chat.current_conversations = action.payload;
+      state.direct_chat.current_conversation = action.payload;
     },
+    fetchCurrentMessages(state, action) {
+      const messages = action.payload.messages;
+      const formatted_messages = messages.map((el) => ({
+        id: el._id,
+        type: "msg",
+        subtype: el.type,
+        message: el.text,
+        incoming: el.to === user_id,
+        outgoing: el.from === user_id,
+      }));
+      state.direct_chat.current_messages = formatted_messages;
+    },
+    addDirectMessage(state, action) {
+      state.direct_chat.current_messages.push(action.payload.message);
+    }
   },
 });
 
+// Reducer
 export default slice.reducer;
 
-//  middleware
+// ----------------------------------------------------------------------
 
 export const FetchDirectConversations = ({ conversations }) => {
-    return async (dispatch, getState) => {
-      dispatch(slice.actions.fetchDirectConversations({ conversations }));
-    };
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.fetchDirectConversations({ conversations }));
   };
+};
+export const AddDirectConversation = ({ conversation }) => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.addDirectConversation({ conversation }));
+  };
+};
+export const UpdateDirectConversation = ({ conversation }) => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.updateDirectConversation({ conversation }));
+  };
+};
 
-  export const UpdateDirectConversation = ({ conversation }) => {
-    return async (dispatch, getState) => {
-      dispatch(slice.actions.updateDirectConversation({ conversation }));
-    };
+export const SetCurrentConversation = (current_conversation) => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.setCurrentConversation(current_conversation));
   };
+};
 
-  export const AddDirectConversation = ({ conversation }) => {
-    return async (dispatch, getState) => {
-      dispatch(slice.actions.addDirectConversation({ conversation }));
-    };
-  };
+
+export const FetchCurrentMessages = ({messages}) => {
+  return async(dispatch, getState) => {
+    dispatch(slice.actions.fetchCurrentMessages({messages}));
+  }
+}
+
+export const AddDirectMessage = (message) => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.addDirectMessage({message}));
+  }
+}

@@ -20,7 +20,6 @@ const StyledChatBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-
 const UserElement = ({ img, firstName, lastName, online, _id }) => {
   const theme = useTheme();
 
@@ -30,7 +29,7 @@ const UserElement = ({ img, firstName, lastName, online, _id }) => {
     <StyledChatBox
       sx={{
         width: "100%",
- 
+
         borderRadius: 1,
 
         backgroundColor: theme.palette.background.paper,
