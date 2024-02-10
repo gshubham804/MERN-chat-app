@@ -22,11 +22,6 @@ const Message = ({ menu }) => {
     (state) => state.conversation.direct_chat
   );
 
-  console.log(
-    conversations,
-    current_messages,
-    "console conversations current_messages"
-  );
   const { room_id } = useSelector((state) => state.app);
 
   useEffect(() => {

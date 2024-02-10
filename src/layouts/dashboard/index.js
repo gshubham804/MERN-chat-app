@@ -5,13 +5,17 @@ import Sidebar from "./Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { connectSocket, socket } from "../../socket";
 import { SelectConversation, showSnackBar } from "../../redux/slices/app";
-import { AddDirectConversation, UpdateDirectConversation } from "../../redux/slices/conversation";
+import {
+  AddDirectConversation,
+  AddDirectMessage,
+  UpdateDirectConversation,
+} from "../../redux/slices/conversation";
 
 const DashboardLayout = () => {
   const { isLoggedIn } = useSelector((state) => state?.auth);
   const user_id = window.localStorage.getItem("user_id");
   const dispatch = useDispatch();
-  const { conversations } = useSelector(
+  const { conversations, current_conversation } = useSelector(
     (state) => state.conversation.direct_chat
   );
 
@@ -28,6 +32,24 @@ const DashboardLayout = () => {
       if (!socket) {
         connectSocket(user_id);
       }
+
+      socket.on("new_message", (data) => {
+        const message = data.message;
+        console.log(current_conversation, data);
+        // check if msg we got is from currently selected conversation
+        if (current_conversation?.id === data.conversation_id) {
+          dispatch(
+            AddDirectMessage({
+              id: message._id,
+              type: "msg",
+              subtype: message.type,
+              message: message.text,
+              incoming: message.to === user_id,
+              outgoing: message.from === user_id,
+            })
+          );
+        }
+      });
 
       // "new_friend_request"
       socket.on("new_friend_request", (data) => {
@@ -75,6 +97,7 @@ const DashboardLayout = () => {
 
     // clean-up function
     return () => {
+      socket?.off("new_message");
       socket?.off("new_friend_request");
       socket?.off("request_accepted");
       socket?.off("request_sent");
