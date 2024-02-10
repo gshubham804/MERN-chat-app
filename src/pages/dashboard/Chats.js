@@ -14,7 +14,6 @@ import {
 } from "phosphor-react";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { ChatList } from "../../data/index";
 import {
   Search,
   SearchIconWrapper,
@@ -23,12 +22,14 @@ import {
 import ChatElement from "../../components/ChatElement";
 import Friends from "../../sections/main/Friends";
 import { socket } from "../../socket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { FetchDirectConversations } from "../../redux/slices/conversation";
 
 const user_id = window.localStorage.getItem("user_id");
 
 const Chats = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false);
   const { conversations } = useSelector(
     (state) => state.conversation.direct_chat
@@ -36,9 +37,12 @@ const Chats = () => {
 
   useEffect(() => {
     socket.emit("get_direct_conversation", { user_id }, (data) => {
-      // data =>> list of conversation =>> coming from backend ==>> existing conversation
+       // this data is the list of conversations
+      // dispatch action
+      dispatch(FetchDirectConversations({ conversations: data }));
     });
   }, []);
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
