@@ -21,16 +21,26 @@ import {
 } from "phosphor-react";
 import { faker } from "@faker-js/faker";
 import Shortcuts from "../../sections/settings/Shortcuts";
+import ThemeDialog from "../../sections/settings/ThemeDialog";
 
 const Settings = () => {
   const theme = useTheme();
-  const[openShortcuts,setOpenShortcuts]= useState(false);
-  const handleOpenShortcuts=()=>{
+  const [openShortcuts, setOpenShortcuts] = useState(false);
+  const [openTheme, setOpenTheme] = useState(false);
+
+  const handleOpenTheme = () => {
+    setOpenTheme(true);
+  };
+
+  const handleCloseTheme = () => {
+    setOpenTheme(false);
+  };
+  const handleOpenShortcuts = () => {
     setOpenShortcuts(true);
-  }
-  const handleCloseShortcuts=()=>{
+  };
+  const handleCloseShortcuts = () => {
     setOpenShortcuts(false);
-  }
+  };
   const list = [
     {
       key: 0,
@@ -54,8 +64,7 @@ const Settings = () => {
       key: 3,
       icon: <PencilCircle size={20} />,
       title: "Theme",
-      //   onclick: handleOpenTheme,
-      onclick: () => {},
+      onclick: handleOpenTheme,
     },
     {
       key: 4,
@@ -73,7 +82,7 @@ const Settings = () => {
       key: 6,
       icon: <Keyboard size={20} />,
       title: "Keyboard Shortcuts",
-        onclick: handleOpenShortcuts,
+      onclick: handleOpenShortcuts,
     },
     {
       key: 7,
@@ -146,9 +155,12 @@ const Settings = () => {
         </Box>
         {/* RightPanel */}
       </Stack>
-      {openShortcuts && 
-      <Shortcuts open={openShortcuts} handleClose={handleCloseShortcuts}/>
-      }
+      {openTheme && (
+        <ThemeDialog open={openTheme} handleClose={handleCloseTheme} />
+      )}
+      {openShortcuts && (
+        <Shortcuts open={openShortcuts} handleClose={handleCloseShortcuts} />
+      )}
     </>
   );
 };

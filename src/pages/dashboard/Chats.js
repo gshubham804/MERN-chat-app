@@ -37,7 +37,7 @@ const Chats = () => {
 
   useEffect(() => {
     socket.emit("get_direct_conversation", { user_id }, (data) => {
-       // this data is the list of conversations
+      // this data is the list of conversations
       // dispatch action
       dispatch(FetchDirectConversations({ conversations: data }));
     });

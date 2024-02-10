@@ -1,28 +1,31 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormProvider from "../../components/hook-form/FormProvider";
-import {
-  Alert,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Alert, Button, Stack } from "@mui/material";
 import { RHFTextField } from "../../components/hook-form";
+import { RHFUploadAvatar } from "../../components/hook-form/RHFUpload";
+import { useDispatch, useSelector } from "react-redux";
+// import { UpdateUserProfile } from "../../../redux/slices/app";
 
 // yup is used to  validate the schema of the form.
 
 const ProfileForm = () => {
+  const dispatch = useDispatch();
+  const [file, setFile] = useState();
+  const { user } = useSelector((state) => state.app);
+
   const ProfileSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     about: Yup.string().required("About is required"),
-    avatarUrl: Yup.string().required("Avatar is required").nullable(true),
+    avatar: Yup.string().required("Avatar is required").nullable(true),
   });
 
   const defaultValues = {
     name: "",
     about: "",
-    avatarUrl: "",
+    avatar: "",
   };
 
   const methods = useForm({
@@ -45,26 +48,35 @@ const ProfileForm = () => {
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
+
+      setFile(file);
+
       const newFile = Object.assign(file, {
         preview: URL.createObjectURL(file),
       });
+
       if (file) {
-        setValue("avatarUrl", newFile, { shouldValidate: true });
+        setValue("avatar", newFile, { shouldValidate: true });
       }
     },
     [setValue]
   );
 
+  console.log(file);
+
   const onSubmit = async (data) => {
     try {
-      // submit data to backend
+      //   Send API request
+      // console.log("DATA", data);
+      // dispatch(
+      //   UpdateUserProfile({
+      //     firstName: data?.firstName,
+      //     about: data?.about,
+      //     avatar: file,
+      //   })
+      // );
     } catch (error) {
-      console.log(error);
-      reset();
-      setError("afterSubmit", {
-        ...error,
-        message: error.message,
-      });
+      console.error(error);
     }
   };
 
@@ -75,6 +87,11 @@ const ProfileForm = () => {
           {!!errors.afterSubmit && (
             <Alert severity="error">{errors.afterSubmit.message}</Alert>
           )}
+          <RHFUploadAvatar
+            name="avatar"
+            maxSize={3145728}
+            onDrop={handleDrop}
+          />
           <RHFTextField
             name="name"
             label="Name"

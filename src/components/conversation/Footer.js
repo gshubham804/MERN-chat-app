@@ -185,12 +185,12 @@ const Footer = () => {
         value.substring(0, selectionStart) +
           emoji +
           value.substring(selectionEnd)
-          );
-          
-          // Move the cursor to the end of the inserted emoji
-          input.selectionStart = input.selectionEnd = selectionStart + 1;
-        }
-      }
+      );
+
+      // Move the cursor to the end of the inserted emoji
+      input.selectionStart = input.selectionEnd = selectionStart + 1;
+    }
+  }
 
   return (
     <Box
@@ -260,6 +260,7 @@ const Footer = () => {
                     to: current_conversation?.user_id,
                     type: containsUrl(value) ? "Link" : "Text",
                   });
+                  setValue("");
                 }}
               >
                 <PaperPlaneTilt color="#ffffff" />

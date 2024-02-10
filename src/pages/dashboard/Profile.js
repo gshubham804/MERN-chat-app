@@ -29,10 +29,12 @@ const Profile = () => {
                 Profile
               </Typography>
             </Stack>
+
             {/* Profile Form */}
             <ProfileForm/>
           </Stack>
         </Box>
+        {/* Right  */}
       </Stack>
     </>
   );
