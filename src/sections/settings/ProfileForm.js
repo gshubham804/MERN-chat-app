@@ -10,11 +10,13 @@ import { useDispatch, useSelector } from "react-redux";
 // import { UpdateUserProfile } from "../../../redux/slices/app";
 
 // yup is used to  validate the schema of the form.
+console.log(process.env.REACT_APP_S3_BUCKET_NAME,"aws console");
 
 const ProfileForm = () => {
   const dispatch = useDispatch();
   const [file, setFile] = useState();
   const { user } = useSelector((state) => state.app);
+
 
   const ProfileSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
