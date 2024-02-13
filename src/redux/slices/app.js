@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/axios";
-import {v4} from 'uuid';
+import { v4 } from "uuid";
 import S3 from "../../utils/S3";
+import axios from "axios";
 
 const initialState = {
   user: {},
@@ -188,43 +189,41 @@ export const FetchUserProfile = () => {
 };
 
 export const UpdateUserProfile = (formValues) => {
-  console.log(formValues,"formvalues");
+  console.log(formValues, "formvalues");
   return async (dispatch, getState) => {
     const file = formValues.avatar;
     const key = v4();
-    try{
-      S3.getSignedUrl(
-        "putObject",
-        { Bucket: process.env.REACT_APP_S3_BUCKET_NAME, Key: key, ContentType: `image/${file.type}` },
-        async (_err, presignedURL) => {
-          await axiosInstance.put(presignedURL, file, {
-            headers: {
-              'Content-Type': file.type,
-            }
-       })
-        }
-      );
-    }
-    catch(error) {
+    const params = {
+      Bucket: process.env.REACT_APP_S3_BUCKET_NAME,
+      Key: key,
+      ContentType: `image/${file.type}`,
+    };
+    try {
+      S3.getSignedUrl("putObject", params, async (_err, presignedURL) => {
+        const axiosResponse = await axios.put(presignedURL, file, {
+          headers: { "Content-Type": file.type },
+        });
+      });
+    } catch (error) {
       console.log(error);
     }
-    axiosInstance
-      .patch(
-        "/user/update-me",
-        { ...formValues, avatar: key },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getState().auth.token}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        dispatch(slice.actions.updateUser({ user: response.data.data }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // axiosInstance
+    //   .patch(
+    //     "/user/update-me",
+    //     { ...formValues, avatar: key },
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${getState().auth.token}`,
+    //       },
+    //     }
+    //   )
+    //   .then((response) => {
+    //     console.log(response);
+    //     dispatch(slice.actions.updateUser({ user: response.data.data }));
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   };
 };
