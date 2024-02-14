@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an instance of axios
 
-const axiosInstance = axios.create({ baseURL:"http://localhost:3001"});
+const axiosInstance = axios.create({ baseURL:process.env.REACT_APP_BASE_URL});
 
 // Create an interceptors which can handle response and error
 
